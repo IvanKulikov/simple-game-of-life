@@ -1,0 +1,63 @@
+<html>
+	<body>
+		<canvas id="canvas" width="800px" height="600px">Get a real browser already will ya?</canvas>
+	</body>
+	<script>
+		var cell = function(x, y, s) {
+			this.x = x;
+			this.y = y;
+			this.width = 50;
+			this.height = 50;
+			this.state = s;
+			this.draw = function(ctx) {
+				this.state ? ctx.fillStyle = "#00FF00" : ctx.fillStyle = "#000000";
+				ctx.fillRect(this.x * this.width, this.y * this.height, this.width, this.height);
+				ctx.fillStyle = "#000000"
+			};
+			
+			this.contains = function (x, y) {
+				if (x > this.x * this.width && y > this.y * this.height && y < this.y * this.height + this.height && x < this.x * this.width + this.width)
+					return true;
+				else
+					return false;
+			};
+		};
+		
+		function randomState() { return Math.random() < 0.5 ? true : false; };
+		
+		var field = function() {
+			this.width = 800 / 50;
+			this.height = 600 / 50;
+			this.cells = [];
+			
+			this.spawn = function() { 
+				for (var  i = 0; i < this.width; i++)
+					for (var j = 0; j < this.height; j++)
+						this.cells.push(new cell(i, j, randomState()));
+			}
+		};
+		
+		// Globals
+		var fieldInstance = new field();
+		fieldInstance.spawn();
+		var ctx = document.getElementById('canvas').getContext("2d");
+		
+				
+		// draw loop
+		setInterval(function() {
+			for (var i = 0; i < fieldInstance.height * fieldInstance.width ; i++)
+				fieldInstance.cells[i].draw(ctx);
+		}, 60);
+		
+		function logicLoop() {
+			// magic goes here
+		};
+		
+		onmouseup = function (event) {
+            for (var i = 0; i < fieldInstance.height * fieldInstance.width ; i++) 
+				if (fieldInstance.cells[i].contains(event.x, event.y)) 
+					fieldInstance.cells[i].state ? fieldInstance.cells[i].state = false : fieldInstance.cells[i].state = true; 
+        };
+		
+	</script>
+</html>
