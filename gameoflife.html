@@ -1,6 +1,24 @@
 <html>
+	<head>
+		<script>
+			var paused = true;
+			function Pause() {
+				paused ? paused = false : paused = true;
+			};
+			
+			function Clear() {
+				for (var  i = 0; i < fieldInstance.cells.length; i++)
+					for (var j = 0; j < fieldInstance.cells[0].length; j++) {
+						fieldInstance.cells[i][j].state = false;
+						fieldInstance.cells[i][j].nbrs = 0;
+					}
+			};
+		</script>
+	<head>
 	<body>
 		<canvas id="canvas" width="800px" height="600px">Get a real browser already will ya?</canvas>
+		<button onclick="Pause()">Pause</button>
+		<button onclick="Clear()">Clear</button>
 	</body>
 	<script>
 		var cell = function(x, y, s) {
@@ -9,10 +27,13 @@
 			this.width = 50;
 			this.height = 50;
 			this.state = s;
+			this.nbrs = 0;
 			this.draw = function(ctx) {
 				this.state ? ctx.fillStyle = "#00FF00" : ctx.fillStyle = "#000000";
 				ctx.fillRect(this.x * this.width, this.y * this.height, this.width, this.height);
-				ctx.fillStyle = "#000000"
+				ctx.fillStyle = "#FFFFFF"
+				ctx.font = "27px Colibri";
+				ctx.fillText(this.nbrs, this.x * this.width + 15, this.y * this.height + 30);
 			};
 			
 			this.contains = function (x, y) {
@@ -26,14 +47,16 @@
 		function randomState() { return Math.random() < 0.5 ? true : false; };
 		
 		var field = function() {
-			this.width = 800 / 50;
-			this.height = 600 / 50;
+			this.width = 1050 / 50;
+			this.height = 800 / 50;
 			this.cells = [];
 			
 			this.spawn = function() { 
-				for (var  i = 0; i < this.width; i++)
+				for (var  i = 0; i < this.width; i++) {
+					this.cells.push(new Array());
 					for (var j = 0; j < this.height; j++)
-						this.cells.push(new cell(i, j, randomState()));
+						this.cells[i].push(new cell(i, j, randomState()));
+				}
 			}
 		};
 		
@@ -45,18 +68,52 @@
 				
 		// draw loop
 		setInterval(function() {
-			for (var i = 0; i < fieldInstance.height * fieldInstance.width ; i++)
-				fieldInstance.cells[i].draw(ctx);
-		}, 60);
+			for (var  i = 0; i < fieldInstance.cells.length; i++)
+				for (var j = 0; j < fieldInstance.cells[0].length; j++) {
+					fieldInstance.cells[i][j].draw(ctx);
+				}
+		}, 17);
 		
-		function logicLoop() {
-			// magic goes here
-		};
+		// logic loop
+		setInterval(function() {	
+			if (!paused) {
+				for (var  i = 0; i < fieldInstance.cells.length; i++)
+					for (var j = 0; j < fieldInstance.cells[0].length; j++) {
+						fieldInstance.cells[i][j].nbrs = 0;
+							
+							/* Neighbours count */
+							if ( i - 1 >= 0 && j - 1 >= 0)
+								if (fieldInstance.cells[i - 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							if ( i - 1 >= 0)
+								if (fieldInstance.cells[i - 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
+							if ( i - 1 >= 0 && j + 1 < fieldInstance.cells[0].length)
+								if (fieldInstance.cells[i - 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							
+							if ( j - 1 >= 0)
+								if (fieldInstance.cells[i][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							if ( j + 1 < fieldInstance.cells[0].length)
+								if (fieldInstance.cells[i][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							
+							if ( i + 1 < fieldInstance.cells.length && j - 1 >= 0)
+								if (fieldInstance.cells[i + 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							if ( i + 1 < fieldInstance.cells.length)
+								if (fieldInstance.cells[i + 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
+							if ( i + 1 < fieldInstance.cells.length && j + 1 < fieldInstance.cells[0].length)
+								if(fieldInstance.cells[i + 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+							
+							/* Rules */
+							if (fieldInstance.cells[i][j].nbrs < 2) fieldInstance.cells[i][j].state = false; 
+							if (fieldInstance.cells[i][j].nbrs > 3) fieldInstance.cells[i][j].state = false; 
+							if (fieldInstance.cells[i][j].nbrs == 3) fieldInstance.cells[i][j].state = true; 	
+						}
+			}
+		}, 250);
 		
 		onmouseup = function (event) {
-            for (var i = 0; i < fieldInstance.height * fieldInstance.width ; i++) 
-				if (fieldInstance.cells[i].contains(event.x, event.y)) 
-					fieldInstance.cells[i].state ? fieldInstance.cells[i].state = false : fieldInstance.cells[i].state = true; 
+            for (var  i = 0; i < fieldInstance.width; i++)
+				for (var j = 0; j < fieldInstance.height; j++) 
+					if (fieldInstance.cells[i][j].contains(event.x, event.y)) 
+						fieldInstance.cells[i][j].state ? fieldInstance.cells[i][j].state = false : fieldInstance.cells[i][j].state = true; 
         };
 		
 	</script>
