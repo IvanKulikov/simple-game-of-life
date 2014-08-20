@@ -76,36 +76,41 @@
 		
 		// logic loop
 		setInterval(function() {	
+			for (var  i = 0; i < fieldInstance.cells.length; i++)
+				for (var j = 0; j < fieldInstance.cells[0].length; j++) {
+					fieldInstance.cells[i][j].nbrs = 0;
+						
+						/* Neighbours count */
+						if ( i - 1 >= 0 && j - 1 >= 0)
+							if (fieldInstance.cells[i - 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						if ( i - 1 >= 0)
+							if (fieldInstance.cells[i - 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
+						if ( i - 1 >= 0 && j + 1 < fieldInstance.cells[0].length)
+							if (fieldInstance.cells[i - 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						
+						if ( j - 1 >= 0)
+							if (fieldInstance.cells[i][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						if ( j + 1 < fieldInstance.cells[0].length)
+							if (fieldInstance.cells[i][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						
+						if ( i + 1 < fieldInstance.cells.length && j - 1 >= 0)
+							if (fieldInstance.cells[i + 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						if ( i + 1 < fieldInstance.cells.length)
+							if (fieldInstance.cells[i + 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
+						if ( i + 1 < fieldInstance.cells.length && j + 1 < fieldInstance.cells[0].length)
+							if(fieldInstance.cells[i + 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
+						
+						
+					}
+			
 			if (!paused) {
 				for (var  i = 0; i < fieldInstance.cells.length; i++)
 					for (var j = 0; j < fieldInstance.cells[0].length; j++) {
-						fieldInstance.cells[i][j].nbrs = 0;
-							
-							/* Neighbours count */
-							if ( i - 1 >= 0 && j - 1 >= 0)
-								if (fieldInstance.cells[i - 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							if ( i - 1 >= 0)
-								if (fieldInstance.cells[i - 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
-							if ( i - 1 >= 0 && j + 1 < fieldInstance.cells[0].length)
-								if (fieldInstance.cells[i - 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							
-							if ( j - 1 >= 0)
-								if (fieldInstance.cells[i][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							if ( j + 1 < fieldInstance.cells[0].length)
-								if (fieldInstance.cells[i][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							
-							if ( i + 1 < fieldInstance.cells.length && j - 1 >= 0)
-								if (fieldInstance.cells[i + 1][j - 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							if ( i + 1 < fieldInstance.cells.length)
-								if (fieldInstance.cells[i + 1][j].state == true) fieldInstance.cells[i][j].nbrs++;
-							if ( i + 1 < fieldInstance.cells.length && j + 1 < fieldInstance.cells[0].length)
-								if(fieldInstance.cells[i + 1][j + 1].state == true) fieldInstance.cells[i][j].nbrs++;
-							
-							/* Rules */
-							if (fieldInstance.cells[i][j].nbrs < 2) fieldInstance.cells[i][j].state = false; 
-							if (fieldInstance.cells[i][j].nbrs > 3) fieldInstance.cells[i][j].state = false; 
-							if (fieldInstance.cells[i][j].nbrs == 3) fieldInstance.cells[i][j].state = true; 	
-						}
+						/* Rules */
+						if (fieldInstance.cells[i][j].nbrs < 2) fieldInstance.cells[i][j].state = false; 
+						else if (fieldInstance.cells[i][j].nbrs > 3) fieldInstance.cells[i][j].state = false; 
+						else if (fieldInstance.cells[i][j].nbrs == 3) fieldInstance.cells[i][j].state = true; 	
+					}
 			}
 		}, 250);
 		
